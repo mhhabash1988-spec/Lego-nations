@@ -3,7 +3,7 @@ services:
     name: lego-nations-live-server
     runtime: node
     rootDir: server
-    buildCommand: npm install
+    buildCommand: npm install && git init vendor/tiktok-signer && git -C vendor/tiktok-signer remote add origin https://github.com/nglmercer/tiktok-signer.git && git -C vendor/tiktok-signer fetch --depth 1 origin 07daa175793a0563431f3dd770e323c01562ffc3 && git -C vendor/tiktok-signer checkout FETCH_HEAD && cd vendor/tiktok-signer/packages/tiktok-live && npm install && npm run build
     startCommand: npm start
     plan: free
     healthCheckPath: /health
