@@ -13,7 +13,7 @@ const key = (q,r) => q + "," + r;
 const cells = [];
 const cellMap = new Map();
 const directions = [[1,0],[1,-1],[0,-1],[-1,0],[-1,1],[0,1]];
-const ammo = Array(8).fill(0);
+const ammo = Array(8).fill(0);\nconst active = new Set();
 let tickNo = 0;
 
 function reset() {
@@ -29,7 +29,7 @@ function reset() {
     const c=cellMap.get(key(q,r));
     c.owner=i+1;c.hp=5;c.base=true;
   });
-  ammo.fill(0);tickNo=0;
+  ammo.fill(0);active.clear();tickNo=0;
 }
 function neighbors(c) {
   return directions.map(([dq,dr])=>cellMap.get(key(c.q+dq,c.r+dr))).filter(Boolean);
@@ -40,7 +40,7 @@ function counts() {
   return out;
 }
 function boost(team, amount) {
-  if(team>=1 && team<=7) ammo[team]+=Math.max(1,Math.min(20,Math.ceil(amount/5)));
+  if(team>=1 && team<=7) { active.add(team); ammo[team]+=Math.max(1,Math.min(20,Math.ceil(amount/5))); }
 }
 function join(team) {
   if(team<1 || team>7) return;
