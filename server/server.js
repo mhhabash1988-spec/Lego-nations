@@ -10,7 +10,8 @@ app.use(express.static(path.join(__dirname, "public")));
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 const clients = new Set();
-const userTeams = new Map();\nconst battle = require("./battle");
+const userTeams = new Map();
+const battle = require("./battle");
 
 let live = null;
 let liveUsername = null;
@@ -53,7 +54,9 @@ function onChat(event) {
 
   if (match) {
     const team = Number(match[1]);
-    userTeams.set(user.key, team);\n    battle.join(team);\n    broadcast(battle.snapshot());
+    userTeams.set(user.key, team);
+    battle.join(team);
+    broadcast(battle.snapshot());
     broadcast({
       type: "join",
       username: user.username,
@@ -81,7 +84,8 @@ function onGift(event) {
   const team = userTeams.get(user.key) || null;
   const diamondCount = Math.max(0, Number(event?.diamondCount || 0));
   const repeatCount = Math.max(1, Number(event?.repeatCount || 1));
-  const points = Math.min(1000000, diamondCount * repeatCount);\n  if (team) battle.boost(team, points);
+  const points = Math.min(1000000, diamondCount * repeatCount);
+  if (team) battle.boost(team, points);
 
   broadcast({
     type: "gift",
@@ -101,7 +105,8 @@ wss.on("connection", (socket) => {
     message: connected ? "متصل بالبث المباشر" : "بانتظار الاتصال بالبث",
     username: liveUsername
   }));
-  socket.send(JSON.stringify(battle.snapshot()));\n  socket.on("close", () => clients.delete(socket));
+  socket.send(JSON.stringify(battle.snapshot()));
+  socket.on("close", () => clients.delete(socket));
 });
 
 app.get("/health", (_req, res) => {
@@ -134,7 +139,9 @@ app.post("/connect", async (req, res) => {
 
     connected = false;
     liveUsername = username;
-    userTeams.clear();\n    battle.reset();\n    broadcast(battle.snapshot());
+    userTeams.clear();
+    battle.reset();
+    broadcast(battle.snapshot());
 
     status("connecting", "جارٍ الاتصال بالبث المباشر...", { username });
 
@@ -212,6 +219,8 @@ app.post("/connect", async (req, res) => {
   }
 });
 
-setInterval(() => broadcast(battle.tick()), 850);\n\nserver.listen(process.env.PORT || 3000, () => {
+setInterval(() => broadcast(battle.tick()), 850);
+
+server.listen(process.env.PORT || 3000, () => {
   console.log("LEGO NATIONS LIVE server ready");
 });
